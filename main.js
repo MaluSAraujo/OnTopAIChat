@@ -3,7 +3,12 @@ const { useState, useRef, useEffect } = React;
 function Icon({ name, className }) {
   const icon = lucide.icons[name];
   if (!icon) return null;
-  return <span dangerouslySetInnerHTML={{ __html: icon.toSvg({ class: className }) }} />;
+  return (
+    <span
+      className={className}
+      dangerouslySetInnerHTML={{ __html: icon }}
+    />
+  );
 }
 
 function ChatInterface() {
@@ -64,7 +69,7 @@ function ChatInterface() {
           {/* Logo + Title */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <img src="assets/logo.png" alt="OnTop Logo" className="h-8 mb-2" />
+              <img src="assets/logo.jpeg" alt="OnTop Logo" className="h-8 mb-2" />
               <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                 OnTop AI Chat
               </h1>
