@@ -1,11 +1,13 @@
+/* Fonte customizada */
 body {
   font-family: 'Inter', sans-serif;
 }
 
+/* Scrollbar mais elegante */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #7c3aed;
-  border-radius: 6px;
+  background: linear-gradient(to bottom, #8b5cf6, #3b82f6);
+  border-radius: 4px;
 }
