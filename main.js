@@ -1,5 +1,6 @@
 const { useState, useRef, useEffect } = React;
 
+// Função para usar ícones Lucide (SVG strings via CDN)
 function Icon({ name, className }) {
   const icon = lucide.icons[name];
   if (!icon) return null;
@@ -61,6 +62,27 @@ function ChatInterface() {
     }, 1500);
   };
 
+  const quickQuestions = [
+    "Mostrar último relatório de vendas",
+    "Quantos colaboradores ativos temos?",
+    "Mostrar métricas de performance Q3",
+    "Listar tabelas do banco de dados",
+  ];
+
+  const conversations = [
+    "Q3 2024 Global Reports",
+    "Database User Queries",
+    "Sales Analysis September",
+    "HR Monthly Metrics",
+    "Financial Dashboard Review",
+  ];
+
+  const languages = [
+    { code: "EN", name: "English", flag: "🇺🇸" },
+    { code: "PT", name: "Português", flag: "🇧🇷" },
+    { code: "ES", name: "Español", flag: "🇪🇸" },
+  ];
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Sidebar */}
@@ -69,7 +91,7 @@ function ChatInterface() {
           {/* Logo + Title */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <img src="assets/logo.jpeg" alt="OnTop Logo" className="h-8 mb-2" />
+              <img src="assets/logo.png" alt="OnTop Logo" className="h-8 mb-2" />
               <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
                 OnTop AI Chat
               </h1>
@@ -78,6 +100,81 @@ function ChatInterface() {
             <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-700 rounded">
               <Icon name="Menu" className="w-5 h-5" />
             </button>
+          </div>
+
+          {/* Language Selector */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center">
+              <Icon name="Globe" className="w-4 h-4 mr-2" />
+              LANGUAGE
+            </h3>
+            <div className="grid grid-cols-3 gap-1">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => setSelectedLanguage(lang.code)}
+                  className={`p-2 rounded-lg text-xs transition-all ${
+                    selectedLanguage === lang.code
+                      ? "bg-purple-600 text-white"
+                      : "bg-slate-700 hover:bg-slate-600 text-gray-300"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="text-sm mb-1">{lang.flag}</div>
+                    <div>{lang.code}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Access */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-3">QUICK ACCESS</h3>
+            <div className="space-y-2">
+              <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all">
+                <Icon name="FileText" className="w-4 h-4 mr-3 text-purple-400" />
+                Reports
+              </button>
+              <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all">
+                <Icon name="Database" className="w-4 h-4 mr-3 text-blue-400" />
+                Database
+              </button>
+              <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all">
+                <Icon name="BarChart3" className="w-4 h-4 mr-3 text-green-400" />
+                Analytics
+              </button>
+              <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all">
+                <Icon name="Users" className="w-4 h-4 mr-3 text-orange-400" />
+                HR Department
+              </button>
+            </div>
+          </div>
+
+          {/* Conversation History */}
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-400 mb-3">RECENT CONVERSATIONS</h3>
+            <div className="space-y-1">
+              {conversations.map((conv, index) => (
+                <button key={index} className="w-full text-left p-2 hover:bg-slate-700/50 rounded text-sm truncate transition-all">
+                  {conv}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom Actions */}
+          <div className="absolute bottom-4 left-4 right-4">
+            <div className="space-y-2">
+              <button className="w-full flex items-center p-2 hover:bg-slate-700 rounded-lg text-left">
+                <Icon name="Settings" className="w-4 h-4 mr-3" />
+                Settings
+              </button>
+              <button className="w-full flex items-center p-2 hover:bg-red-800 rounded-lg text-left text-red-400">
+                <Icon name="LogOut" className="w-4 h-4 mr-3" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -119,6 +216,23 @@ function ChatInterface() {
           {isLoading && <div className="text-gray-500">OnTop AI está digitando...</div>}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Quick Questions */}
+        {messages.length <= 1 && (
+          <div className="px-4 py-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {quickQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInputValue(question)}
+                  className="p-3 text-left border border-purple-200 bg-white/50 backdrop-blur-sm rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all text-sm shadow-sm hover:shadow-md"
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Input */}
         <div className="bg-white/80 border-t border-purple-200/50 p-4">
