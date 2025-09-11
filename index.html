@@ -15,59 +15,23 @@
     <script type="text/babel">
         const { useState, useRef, useEffect } = React;
 
-        // Icon component with added 'X' for closing elements
+        // Componente de ícone com novos ícones adicionados
         function Icon({ name, className = "", size = 20 }) {
             const icons = {
-                Menu: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
-                  </svg>
-                ),
-                X: () => (
-                    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                ),
-                Globe: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <circle cx="12" cy="12" r="10"/><path d="m12 2-3 7 3 7 3-7-3-7"/><path d="M8 12h8"/>
-                  </svg>
-                ),
-                FileText: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
-                  </svg>
-                ),
-                Database: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 3 4 6 9 6s9-3 9-6V5"/><path d="M3 12c0 3 4 6 9 6s9-3 9-6"/>
-                  </svg>
-                ),
-                BarChart3: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
-                  </svg>
-                ),
-                Users: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                ),
-                Settings: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                ),
-                LogOut: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" x2="9" y1="12" y2="12"/>
-                  </svg>
-                ),
-                Send: () => (
-                  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-                    <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
-                  </svg>
-                )
+                Menu: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>),
+                X: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>),
+                Globe: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="m12 2-3 7 3 7 3-7-3-7"/><path d="M8 12h8"/></svg>),
+                FileText: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>),
+                Database: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 3 4 6 9 6s9-3 9-6V5"/><path d="M3 12c0 3 4 6 9 6s9-3 9-6"/></svg>),
+                BarChart3: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>),
+                Users: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>),
+                Settings: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>),
+                LogOut: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>),
+                Send: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>),
+                Plus: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>),
+                MessageSquare: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>),
+                Lightbulb: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M15 14c.2-1 .7-1.7 1.5-2.5C17.7 10.2 18 9 18 7.5a6 6 0 0 0-12 0c0 1.5.3 2.7 1.5 3.5.7.8 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>),
+                User: () => (<svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>)
             };
             const IconComponent = icons[name];
             return IconComponent ? <IconComponent /> : null;
@@ -79,18 +43,12 @@
             ]);
             const [inputValue, setInputValue] = useState("");
             const [isLoading, setIsLoading] = useState(false);
-            const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024); // lg breakpoint
+            const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
             const [selectedLanguage, setSelectedLanguage] = useState("EN");
             const messagesEndRef = useRef(null);
 
             useEffect(() => {
-                const handleResize = () => {
-                    if (window.innerWidth < 1024) {
-                        setSidebarOpen(false);
-                    } else {
-                        setSidebarOpen(true);
-                    }
-                };
+                const handleResize = () => setSidebarOpen(window.innerWidth >= 1024);
                 window.addEventListener('resize', handleResize);
                 handleResize();
                 return () => window.removeEventListener('resize', handleResize);
@@ -111,8 +69,7 @@
                         PT: ["📊 Último relatório de vendas mostra crescimento de 15% no Q3.","👥 Atualmente temos 1.247 colaboradores ativos distribuídos em 8 departamentos.","📈 A taxa de turnover está em 8,2%, abaixo da média do setor."],
                         ES: ["📊 El último informe de ventas muestra un crecimiento del 15% en Q3.","👥 Actualmente tenemos 1.247 empleados activos en 8 departamentos.","📈 La tasa de rotación está en 8,2%, por debajo del promedio de la industria."],
                     };
-                    const currentResponses = responses[selectedLanguage];
-                    const assistantMessage = { id: messages.length + 2, type: "assistant", content: currentResponses[Math.floor(Math.random() * currentResponses.length)], timestamp: new Date() };
+                    const assistantMessage = { id: messages.length + 2, type: "assistant", content: responses[selectedLanguage][Math.floor(Math.random() * responses[selectedLanguage].length)], timestamp: new Date() };
                     setMessages((prev) => [...prev, assistantMessage]);
                     setIsLoading(false);
                 }, 1500);
@@ -126,127 +83,96 @@
             const conversations = ["Q3 2024 Global Reports", "Database User Queries", "Sales Analysis September", "HR Monthly Metrics", "Financial Dashboard Review", "Marketing Campaign ROI", "IT Infrastructure Update"];
             const languages = [{ code: "EN", name: "English", flag: "🇺🇸" }, { code: "PT", name: "Português", flag: "🇧🇷" }, { code: "ES", name: "Español", flag: "🇪🇸" }];
             const texts = {
-                EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", quickAccess: "QUICK ACCESS", recentConversations: "RECENT CONVERSATIONS", reports: "Reports", database: "Database", analytics: "Analytics", hrDepartment: "HR Department", settings: "Settings", signOut: "Sign Out", online: "Online" },
-                PT: { typing: "OnTop AI está a digitar...", placeholder: "Pergunte sobre relatórios, dados de RH, vendas...", quickAccess: "ACESSO RÁPIDO", recentConversations: "CONVERSAS RECENTES", reports: "Relatórios", database: "Base de Dados", analytics: "Análises", hrDepartment: "Departamento RH", settings: "Configurações", signOut: "Sair", online: "Online" },
-                ES: { typing: "OnTop AI está escribiendo...", placeholder: "Pregunta sobre informes, datos de RRHH, ventas...", quickAccess: "ACCESO RÁPIDO", recentConversations: "CONVERSACIONES RECIENTES", reports: "Informes", database: "Base de Datos", analytics: "Análisis", hrDepartment: "Departamento RRHH", settings: "Configuración", signOut: "Cerrar Sesión", online: "En línea" },
+                EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", newChat: "New Chat", chats: "Chats", settings: "Settings", signOut: "Sign Out", myAccount: "My Account", welcome: "How can I help you today?", suggestions: "Suggestions to get started", online: "Online"},
+                PT: { typing: "OnTop AI está a digitar...", placeholder: "Pergunte sobre relatórios, dados de RH...", newChat: "Novo Chat", chats: "Conversas", settings: "Configurações", signOut: "Sair", myAccount: "Minha Conta", welcome: "Como posso ajudar hoje?", suggestions: "Sugestões para começar", online: "Online"},
+                ES: { typing: "OnTop AI está escribiendo...", placeholder: "Pregunta sobre informes, datos de RRHH...", newChat: "Nuevo Chat", chats: "Chats", settings: "Configuración", signOut: "Cerrar Sesión", myAccount: "Mi Cuenta", welcome: "¿Cómo puedo ayudarte hoy?", suggestions: "Sugerencias para empezar", online: "En línea"},
             };
             const currentTexts = texts[selectedLanguage];
 
             return (
-                <div className="flex h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
-                    {/* Backdrop for mobile */}
+                <div className="flex h-screen bg-slate-50 text-slate-800 relative overflow-hidden">
                     {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/40 z-20 lg:hidden"></div>}
                     
-                    {/* Sidebar */}
-                    <aside className={`
-                        bg-gradient-to-b from-slate-900 via-slate-800 to-purple-900 text-white 
-                        transform transition-transform duration-300 ease-in-out
-                        fixed lg:relative inset-y-0 left-0 z-30
-                        w-64 flex flex-col
-                        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-                    `}>
-                        {/* Main scrolling area */}
-                        <div className="flex-1 overflow-y-auto p-4">
-                            {/* Logo + Title + Close Button */}
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <div className="h-8 w-24 bg-gradient-to-r from-purple-400 to-blue-400 rounded mb-2 flex items-center justify-center text-sm font-bold">OnTop</div>
-                                    <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">OnTop AI Chat</h1>
-                                    <p className="text-xs text-gray-400">Corporate Intelligence</p>
-                                </div>
-                                <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-700 rounded lg:hidden">
-                                    <Icon name="X" size={20} />
-                                </button>
-                            </div>
-                           
-                            <div className="mb-6">
-                                <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center"><Icon name="Globe" size={16} className="mr-2" />LANGUAGE</h3>
-                                <div className="grid grid-cols-3 gap-1">
-                                    {languages.map((lang) => (
-                                        <button key={lang.code} onClick={() => setSelectedLanguage(lang.code)} className={`p-2 rounded-lg text-xs transition-all ${selectedLanguage === lang.code ? "bg-purple-600 text-white" : "bg-slate-700 hover:bg-slate-600 text-gray-300"}`}>
-                                            <div className="text-center"><div className="text-sm mb-1">{lang.flag}</div><div>{lang.code}</div></div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="mb-6">
-                                <h3 className="text-sm font-medium text-gray-400 mb-3">{currentTexts.quickAccess}</h3>
-                                <div className="space-y-2">
-                                    <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all"><Icon name="FileText" size={16} className="mr-3 text-purple-400" />{currentTexts.reports}</button>
-                                    <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all"><Icon name="Database" size={16} className="mr-3 text-blue-400" />{currentTexts.database}</button>
-                                    <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all"><Icon name="BarChart3" size={16} className="mr-3 text-green-400" />{currentTexts.analytics}</button>
-                                    <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all"><Icon name="Users" size={16} className="mr-3 text-orange-400" />{currentTexts.hrDepartment}</button>
-                                </div>
-                            </div>
-                            <div className="mb-2">
-                                <h3 className="text-sm font-medium text-gray-400 mb-3">{currentTexts.recentConversations}</h3>
-                                <div className="space-y-1">{conversations.map((conv, index) => (<button key={index} className="w-full text-left p-2 hover:bg-slate-700/50 rounded text-sm truncate transition-all">{conv}</button>))}</div>
+                    <aside className={`bg-gradient-to-b from-slate-900 via-slate-800 to-purple-900 text-white transform transition-transform duration-300 ease-in-out fixed lg:relative inset-y-0 left-0 z-30 w-64 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <div className="p-4 flex items-center justify-between">
+                             <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-lg font-bold">O</div>
+                                <h1 className="text-lg font-bold text-white">OnTop AI</h1>
+                             </div>
+                             <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-slate-700 rounded lg:hidden"><Icon name="X" size={20} /></button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto px-4 pb-4">
+                            <button className="w-full flex items-center justify-center gap-2 p-2.5 my-4 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg text-sm font-semibold hover:from-purple-600 hover:to-blue-600 transition-all shadow-md"><Icon name="Plus" size={16}/>{currentTexts.newChat}</button>
+                            
+                            <div className="space-y-2">
+                                <button className="w-full flex items-center p-2 bg-slate-700/50 rounded-lg text-left text-sm"><Icon name="MessageSquare" size={16} className="mr-3 text-gray-400" />{currentTexts.chats}</button>
+                                {conversations.map((conv, index) => (<button key={index} className="w-full text-left p-2 pl-9 hover:bg-slate-700/50 rounded text-sm truncate transition-all text-gray-300">{conv}</button>))}
                             </div>
                         </div>
 
-                        {/* Bottom fixed actions */}
                         <div className="p-4 mt-auto border-t border-slate-700/50">
                             <div className="space-y-2">
-                                <button className="w-full flex items-center p-2 hover:bg-slate-700 rounded-lg text-left">
-                                    <Icon name="Settings" size={16} className="mr-3" />
-                                    {currentTexts.settings}
-                                </button>
-                                <button className="w-full flex items-center p-2 hover:bg-red-800/50 rounded-lg text-left text-red-400">
-                                    <Icon name="LogOut" size={16} className="mr-3" />
-                                    {currentTexts.signOut}
-                                </button>
+                                <button className="w-full flex items-center p-2 hover:bg-slate-700/50 rounded-lg text-left text-sm"><Icon name="Settings" size={16} className="mr-3 text-gray-400" />{currentTexts.settings}</button>
+                                <button className="w-full flex items-center p-2 hover:bg-red-800/50 rounded-lg text-left text-sm text-red-400"><Icon name="LogOut" size={16} className="mr-3" />{currentTexts.signOut}</button>
+                                <button className="w-full flex items-center p-2 mt-2 border-t border-slate-700/50 pt-4 hover:bg-slate-700/50 rounded-lg text-left text-sm"><Icon name="User" size={16} className="mr-3 text-gray-400" />{currentTexts.myAccount}</button>
                             </div>
                         </div>
                     </aside>
 
-                    {/* Main Chat */}
                     <main className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
-                         {/* Header */}
-                        <div className="bg-white/80 border-b border-purple-200/50 p-4 flex items-center">
-                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-purple-100 rounded-lg mr-3">
-                                <Icon name="Menu" size={20} />
-                            </button>
-                            <h2 className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">OnTop AI Chat</h2>
-                            <div className="ml-auto flex items-center space-x-4">
-                                <span className="text-sm text-gray-600">{languages.find(lang => lang.code === selectedLanguage)?.name}</span>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gradient-to-r from-green-100 to-blue-100 text-green-800">● {currentTexts.online}</span>
+                        <header className="bg-white/80 border-b border-slate-200 p-4 flex items-center justify-between">
+                             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-slate-100 rounded-lg text-slate-600"><Icon name="Menu" size={20} /></button>
+                            <div className="flex items-center space-x-4">
+                                <div className="relative">
+                                    <select onChange={(e) => setSelectedLanguage(e.target.value)} value={selectedLanguage} className="text-sm appearance-none bg-slate-100 border border-slate-200 rounded-md py-1 pl-3 pr-8 text-slate-700 focus:outline-none focus:ring-2 focus:ring-purple-400">
+                                        {languages.map(lang => <option key={lang.code} value={lang.code}>{lang.name}</option>)}
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-700"><svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg></div>
+                                </div>
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">● {currentTexts.online}</span>
                             </div>
-                        </div>
+                        </header>
 
-                        {/* Messages */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.map((msg) => (
-                                <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
-                                    <div className={`max-w-xl lg:max-w-3xl px-4 py-3 rounded-2xl shadow-lg ${msg.type === "user" ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white" : "bg-white border border-purple-100 text-gray-800"}`}>
-                                        <p className="break-words">{msg.content}</p>
-                                        <span className={`text-xs mt-2 block ${msg.type === "user" ? "text-purple-100" : "text-gray-500"}`}>{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            {messages.length <= 1 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-center">
+                                    <div className="h-12 w-12 mb-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg">O</div>
+                                    <h2 className="text-2xl font-bold text-slate-800">{currentTexts.welcome}</h2>
+                                    <p className="text-slate-500 mb-6">{currentTexts.suggestions}</p>
+                                    <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        {quickQuestions[selectedLanguage].map((q, i) => (
+                                            <button key={i} onClick={() => setInputValue(q)} className="p-4 text-left bg-white border border-slate-200 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-all group">
+                                                <div className="flex items-start gap-3">
+                                                    <Icon name="Lightbulb" className="mt-1 text-yellow-400"/>
+                                                    <span className="text-sm text-slate-700">{q}</span>
+                                                </div>
+                                            </button>
+                                        ))}
                                     </div>
                                 </div>
-                            ))}
-                            {isLoading && <div className="text-gray-500">{currentTexts.typing}</div>}
+                            ) : (
+                                messages.map((msg) => (
+                                    <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
+                                        <div className={`max-w-xl lg:max-w-3xl px-4 py-3 rounded-2xl shadow-md ${msg.type === "user" ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white" : "bg-white border border-slate-200 text-slate-800"}`}>
+                                            <p className="break-words">{msg.content}</p>
+                                            <span className={`text-xs mt-2 block ${msg.type === "user" ? "text-purple-100" : "text-slate-500"}`}>{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                            {isLoading && <div className="text-slate-500 p-2">{currentTexts.typing}</div>}
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Quick Questions */}
-                        {messages.length <= 1 && (
-                            <div className="px-4 py-2">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                    {quickQuestions[selectedLanguage].slice(0, 4).map((question, index) => (
-                                        <button key={index} onClick={() => { setInputValue(question); }} className="p-3 text-left border border-purple-200 bg-white/50 backdrop-blur-sm rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all text-sm shadow-sm hover:shadow-md">
-                                            {question}
-                                        </button>
-                                    ))}
+                        <div className="bg-white/80 border-t border-slate-200 p-4">
+                            <div className="max-w-4xl mx-auto">
+                                <div className="relative flex items-center">
+                                    <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyPress={(e) => e.key === "Enter" && !isLoading && handleSendMessage()} placeholder={currentTexts.placeholder} className="w-full pl-4 pr-12 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none transition-shadow shadow-sm"/>
+                                    <button onClick={handleSendMessage} disabled={isLoading} className="absolute right-2.5 p-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <Icon name="Send" size={20} />
+                                    </button>
                                 </div>
-                            </div>
-                        )}
-
-                        {/* Input */}
-                        <div className="bg-white/80 border-t border-purple-200/50 p-4">
-                            <div className="max-w-4xl mx-auto flex space-x-3">
-                                <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} placeholder={currentTexts.placeholder} className="flex-1 px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none" />
-                                <button onClick={handleSendMessage} disabled={isLoading} className="px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <Icon name="Send" size={20} />
-                                </button>
                             </div>
                         </div>
                     </main>
@@ -258,3 +184,4 @@
     </script>
 </body>
 </html>
+
