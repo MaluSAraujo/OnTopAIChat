@@ -49,7 +49,7 @@
             const [isAccountOpen, setAccountOpen] = useState(false);
             const [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
             const [isAddToProjectOpen, setAddToProjectOpen] = useState(false);
-            const [projects, setProjects] = useState(["Análise Corporal Julio", "ML Book - Marie", "TCC Juliana"]);
+            const [projects, setProjects] = useState(["AI Projects", "Products Reports", "Onboarding"]);
             const messagesEndRef = useRef(null);
             const moreMenuRef = useRef(null);
 
@@ -108,7 +108,7 @@
                 PT: ["Mostrar último relatório de vendas", "Quantos colaboradores ativos temos?", "Mostrar métricas de performance Q3", "Listar tabelas do banco de dados"],
                 ES: ["Mostrar último informe de ventas", "¿Cuántos empleados activos tenemos?", "Mostrar métricas de rendimiento Q3", "Listar tablas de base de datos"],
             };
-            const conversations = ["Cálculo de circunferência", "Reescrever juridicamente texto", "Jurisprudência sobre custas", "Altura papeleira banheiro"];
+            const conversations = [];
             const languages = [{ code: "EN", name: "English" }, { code: "PT", name: "Português" }, { code: "ES", name: "Español" }];
             const texts = {
                 EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", newChat: "New Chat", chats: "Chats", settings: "Settings", signOut: "Sign Out", myAccount: "My Account", welcome: "How can I help you today?", suggestions: "Suggestions to get started", online: "Online", share: "Share", addToProject: "Add to project", archive: "Archive", report: "Report", delete: "Delete", projects: "Projects", newProject: "New project"},
