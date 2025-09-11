@@ -43,7 +43,6 @@
         }
 
         function ChatInterface() {
-            const [messages, setMessages] = useState([]);
             const [inputValue, setInputValue] = useState("");
             const [isLoading, setIsLoading] = useState(false);
             const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
@@ -51,13 +50,31 @@
             const [isAccountOpen, setAccountOpen] = useState(false);
             const [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
             const [isAddToProjectOpen, setAddToProjectOpen] = useState(false);
-            const [projects, setProjects] = useState([]);
-            const [folders, setFolders] = useState([]);
-            const [chatCount, setChatCount] = useState(0);
+            
+            const [chats, setChats] = useState(() => {
+                const savedChats = localStorage.getItem('ontop-ai-chats');
+                return savedChats ? JSON.parse(savedChats) : {};
+            });
+            const [currentChatId, setCurrentChatId] = useState(null);
+            
+            const [projects, setProjects] = useState(() => {
+                const savedProjects = localStorage.getItem('ontop-ai-projects');
+                return savedProjects ? JSON.parse(savedProjects) : [];
+            });
+
             const [alertCount, setAlertCount] = useState(0);
             const [queryCount, setQueryCount] = useState(0);
             const messagesEndRef = useRef(null);
             const moreMenuRef = useRef(null);
+
+            // Save chats and projects to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('ontop-ai-chats', JSON.stringify(chats));
+            }, [chats]);
+
+            useEffect(() => {
+                localStorage.setItem('ontop-ai-projects', JSON.stringify(projects));
+            }, [projects]);
 
             useEffect(() => {
                 const handleResize = () => setSidebarOpen(window.innerWidth >= 1024);
@@ -77,9 +94,9 @@
             }, [moreMenuRef]);
 
             const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            useEffect(scrollToBottom, [messages]);
+            useEffect(scrollToBottom, [chats[currentChatId]?.messages]);
 
-            const startNewChat = () => setMessages([]);
+            const startNewChat = () => setCurrentChatId(null);
 
             const handleAddNewProject = () => {
                 const newProjectName = `Novo Projeto ${projects.length + 1}`;
@@ -92,49 +109,63 @@
                 if (!inputValue.trim()) return;
 
                 const userMessage = { id: Date.now(), type: "user", content: inputValue, timestamp: new Date() };
-                setMessages(prev => [...prev, userMessage]);
-                
                 const query = inputValue;
                 setInputValue("");
+                
+                let chatId = currentChatId;
+                let newChatCreated = false;
+
+                if (!chatId) {
+                    newChatCreated = true;
+                    chatId = `chat_${Date.now()}`;
+                    setCurrentChatId(chatId);
+                    setChats(prev => ({
+                        ...prev,
+                        [chatId]: {
+                            title: query.substring(0, 40) + (query.length > 40 ? '...' : ''),
+                            messages: [userMessage]
+                        }
+                    }));
+                } else {
+                     setChats(prev => ({
+                        ...prev,
+                        [chatId]: {
+                            ...prev[chatId],
+                            messages: [...prev[chatId].messages, userMessage]
+                        }
+                    }));
+                }
+                
                 setIsLoading(true);
 
                 try {
-                    const apiKey = ""; // Canvas provides this automatically
+                    const apiKey = "";
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                    
                     const systemPrompt = "You are OnTop AI, a helpful corporate intelligence assistant. You can answer questions about internal reports, database queries, and department information. Your knowledge base includes tables for sales, employees, and product performance. When asked for data, provide a concise and clear answer. You can communicate in English, Portuguese, and Spanish, based on the user's language.";
+                    const payload = { contents: [{ parts: [{ text: query }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+                    const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
-                    const payload = {
-                        contents: [{ parts: [{ text: query }] }],
-                        systemInstruction: {
-                            parts: [{ text: systemPrompt }]
-                        },
-                    };
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API Error: ${response.statusText}`);
-                    }
-
+                    if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                    
                     const result = await response.json();
                     const assistantText = result.candidates?.[0]?.content?.parts?.[0]?.text;
                     
                     if (assistantText) {
                         const assistantMessage = { id: Date.now(), type: "assistant", content: assistantText, timestamp: new Date() };
-                        setMessages(prev => [...prev, assistantMessage]);
+                        setChats(prev => ({
+                            ...prev,
+                            [chatId]: { ...prev[chatId], messages: [...prev[chatId].messages, assistantMessage] }
+                        }));
                     } else {
                          throw new Error("No content received from API.");
                     }
-
                 } catch (error) {
                     console.error("Failed to fetch from Gemini API:", error);
                     const errorMessage = { id: Date.now(), type: "assistant", content: "Sorry, I couldn't get a response. Please try again.", timestamp: new Date() };
-                    setMessages(prev => [...prev, errorMessage]);
+                     setChats(prev => ({
+                        ...prev,
+                        [chatId]: { ...prev[chatId], messages: [...prev[chatId].messages, errorMessage] }
+                    }));
                 } finally {
                     setIsLoading(false);
                 }
@@ -145,14 +176,15 @@
                 PT: ["Mostrar último relatório de vendas", "Quantos colaboradores ativos temos?", "Mostrar métricas de performance Q3", "Listar tabelas do banco de dados"],
                 ES: ["Mostrar último informe de ventas", "¿Cuántos empleados activos tenemos?", "Mostrar métricas de rendimiento Q3", "Listar tablas de base de datos"],
             };
-            const conversations = [];
             const languages = [{ code: "EN", name: "English" }, { code: "PT", name: "Português" }, { code: "ES", name: "Español" }];
             const texts = {
-                EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", newChat: "New Chat", chats: "Chats", settings: "Settings", signOut: "Sign Out", myAccount: "My Account", welcome: "How can I help you today?", suggestions: "Suggestions to get started", online: "Online", share: "Share", addToProject: "Add to project", archive: "Archive", report: "Report", delete: "Delete", projects: "Projects", newProject: "New project", alerts: "Alerts", queries: "Queries", folders: "Folders"},
-                PT: { typing: "OnTop AI está a digitar...", placeholder: "Pergunte sobre relatórios, dados de RH...", newChat: "Novo Chat", chats: "Conversas", settings: "Configurações", signOut: "Sair", myAccount: "Minha Conta", welcome: "Como posso ajudar hoje?", suggestions: "Sugestões para começar", online: "Online", share: "Compartilhar", addToProject: "Adicionar ao projeto", archive: "Arquivar", report: "Denunciar", delete: "Excluir", projects: "Projetos", newProject: "Novo projeto", alerts: "Alertas", queries: "Consultas", folders: "Pastas"},
-                ES: { typing: "OnTop AI está escribiendo...", placeholder: "Pregunta sobre informes, datos de RRHH...", newChat: "Nuevo Chat", chats: "Chats", settings: "Configuración", signOut: "Cerrar Sesión", myAccount: "Mi Cuenta", welcome: "¿Cómo puedo ayudarte hoy?", suggestions: "Sugerencias para empezar", online: "En línea", share: "Compartir", addToProject: "Añadir al proyecto", archive: "Archivar", report: "Denunciar", delete: "Eliminar", projects: "Proyectos", newProject: "Nuevo proyecto", alerts: "Alertas", queries: "Consultas", folders: "Carpetas"},
+                EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", newChat: "New Chat", chats: "Chats", settings: "Settings", signOut: "Sign Out", myAccount: "My Account", welcome: "How can I help you today?", suggestions: "Suggestions to get started", online: "Online", share: "Share", addToProject: "Add to project", archive: "Archive", report: "Report", delete: "Delete", projects: "Projects", newProject: "New project", alerts: "Alerts", queries: "Queries"},
+                PT: { typing: "OnTop AI está a digitar...", placeholder: "Pergunte sobre relatórios, dados de RH...", newChat: "Novo Chat", chats: "Conversas", settings: "Configurações", signOut: "Sair", myAccount: "Minha Conta", welcome: "Como posso ajudar hoje?", suggestions: "Sugestões para começar", online: "Online", share: "Compartilhar", addToProject: "Adicionar ao projeto", archive: "Arquivar", report: "Denunciar", delete: "Excluir", projects: "Projetos", newProject: "Novo projeto", alerts: "Alertas", queries: "Consultas"},
+                ES: { typing: "OnTop AI está escribiendo...", placeholder: "Pregunta sobre informes, datos de RRHH...", newChat: "Nuevo Chat", chats: "Chats", settings: "Configuración", signOut: "Cerrar Sesión", myAccount: "Mi Cuenta", welcome: "¿Cómo puedo ayudarte hoy?", suggestions: "Sugerencias para empezar", online: "En línea", share: "Compartir", addToProject: "Añadir al proyecto", archive: "Archivar", report: "Denunciar", delete: "Eliminar", projects: "Proyectos", newProject: "Nuevo proyecto", alerts: "Alertas", queries: "Consultas"},
             };
             const currentTexts = texts[selectedLanguage];
+            const messages = chats[currentChatId]?.messages || [];
+            const conversations = Object.entries(chats).map(([id, data]) => ({ id, ...data })).reverse();
 
             return (
                 <div className="flex h-screen bg-slate-50 text-slate-800 relative overflow-hidden">
@@ -176,7 +208,7 @@
                                         <Icon name="MessageSquare" size={16} />
                                         <span>{currentTexts.chats}</span>
                                     </div>
-                                    <span className="px-2 py-0.5 text-xs font-semibold bg-slate-700 rounded-full">{chatCount}</span>
+                                    <span className="px-2 py-0.5 text-xs font-semibold bg-slate-700 rounded-full">{Object.keys(chats).length}</span>
                                 </button>
                                 <button className="w-full flex items-center justify-between p-2 text-sm rounded-lg text-gray-300 hover:bg-slate-700/50">
                                     <div className="flex items-center gap-3">
@@ -195,17 +227,12 @@
                             </div>
 
                             <div className="mb-4">
-                                <h3 className="px-2 mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">{currentTexts.folders}</h3>
-                                {folders.map((folder, index) => (<button key={index} className="w-full flex items-center gap-3 p-2 text-left text-sm text-gray-300 rounded-lg hover:bg-slate-700/50"><Icon name="Folder" size={16} />{folder}</button>))}
-                            </div>
-
-                            <div className="mb-4">
                                 <h3 className="px-2 mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">{currentTexts.projects}</h3>
                                 {projects.map((project, index) => (<button key={index} className="w-full flex items-center gap-3 p-2 text-left text-sm text-gray-300 rounded-lg hover:bg-slate-700/50"><Icon name="Folder" size={16} />{project}</button>))}
                             </div>
 
                             <div>
-                                {conversations.map((conv, index) => (<button key={index} className="w-full text-left p-2 text-sm truncate transition-all text-gray-300 rounded-lg hover:bg-slate-700/50">{conv}</button>))}
+                                {conversations.map((conv) => (<button key={conv.id} onClick={() => setCurrentChatId(conv.id)} className={`w-full text-left p-2 text-sm truncate transition-all rounded-lg ${currentChatId === conv.id ? 'bg-slate-700' : 'text-gray-300 hover:bg-slate-700/50'}`}>{conv.title}</button>))}
                             </div>
                         </div>
 
@@ -321,4 +348,3 @@
     </script>
 </body>
 </html>
-
