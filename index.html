@@ -83,7 +83,6 @@
             const [selectedLanguage, setSelectedLanguage] = useState("EN");
             const messagesEndRef = useRef(null);
 
-            // Effect to handle window resize for sidebar
             useEffect(() => {
                 const handleResize = () => {
                     if (window.innerWidth < 1024) {
@@ -93,7 +92,6 @@
                     }
                 };
                 window.addEventListener('resize', handleResize);
-                // Initial check
                 handleResize();
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
@@ -125,11 +123,11 @@
                 PT: ["Mostrar último relatório de vendas", "Quantos colaboradores ativos temos?", "Mostrar métricas de performance Q3", "Listar tabelas do banco de dados"],
                 ES: ["Mostrar último informe de ventas", "¿Cuántos empleados activos tenemos?", "Mostrar métricas de rendimiento Q3", "Listar tablas de base de datos"],
             };
-            const conversations = ["Q3 2024 Global Reports", "Database User Queries", "Sales Analysis September", "HR Monthly Metrics", "Financial Dashboard Review"];
+            const conversations = ["Q3 2024 Global Reports", "Database User Queries", "Sales Analysis September", "HR Monthly Metrics", "Financial Dashboard Review", "Marketing Campaign ROI", "IT Infrastructure Update"];
             const languages = [{ code: "EN", name: "English", flag: "🇺🇸" }, { code: "PT", name: "Português", flag: "🇧🇷" }, { code: "ES", name: "Español", flag: "🇪🇸" }];
             const texts = {
                 EN: { typing: "OnTop AI is typing...", placeholder: "Ask about reports, HR data, sales...", quickAccess: "QUICK ACCESS", recentConversations: "RECENT CONVERSATIONS", reports: "Reports", database: "Database", analytics: "Analytics", hrDepartment: "HR Department", settings: "Settings", signOut: "Sign Out", online: "Online" },
-                PT: { typing: "OnTop AI está digitando...", placeholder: "Pergunte sobre relatórios, dados de RH, vendas...", quickAccess: "ACESSO RÁPIDO", recentConversations: "CONVERSAS RECENTES", reports: "Relatórios", database: "Banco de Dados", analytics: "Análises", hrDepartment: "Departamento RH", settings: "Configurações", signOut: "Sair", online: "Online" },
+                PT: { typing: "OnTop AI está a digitar...", placeholder: "Pergunte sobre relatórios, dados de RH, vendas...", quickAccess: "ACESSO RÁPIDO", recentConversations: "CONVERSAS RECENTES", reports: "Relatórios", database: "Base de Dados", analytics: "Análises", hrDepartment: "Departamento RH", settings: "Configurações", signOut: "Sair", online: "Online" },
                 ES: { typing: "OnTop AI está escribiendo...", placeholder: "Pregunta sobre informes, datos de RRHH, ventas...", quickAccess: "ACCESO RÁPIDO", recentConversations: "CONVERSACIONES RECIENTES", reports: "Informes", database: "Base de Datos", analytics: "Análisis", hrDepartment: "Departamento RRHH", settings: "Configuración", signOut: "Cerrar Sesión", online: "En línea" },
             };
             const currentTexts = texts[selectedLanguage];
@@ -140,14 +138,15 @@
                     {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/40 z-20 lg:hidden"></div>}
                     
                     {/* Sidebar */}
-                    <div className={`
+                    <aside className={`
                         bg-gradient-to-b from-slate-900 via-slate-800 to-purple-900 text-white 
                         transform transition-transform duration-300 ease-in-out
                         fixed lg:relative inset-y-0 left-0 z-30
-                        w-64
-                        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-0'}
+                        w-64 flex flex-col
+                        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
                     `}>
-                        <div className="p-4 relative h-full overflow-y-auto">
+                        {/* Main scrolling area */}
+                        <div className="flex-1 overflow-y-auto p-4">
                             {/* Logo + Title + Close Button */}
                             <div className="flex items-center justify-between mb-6">
                                 <div>
@@ -159,8 +158,7 @@
                                     <Icon name="X" size={20} />
                                 </button>
                             </div>
-                            {/* Language Selector, Quick Access, etc. */}
-                            {/* ... (rest of sidebar content is unchanged) */}
+                           
                             <div className="mb-6">
                                 <h3 className="text-sm font-medium text-gray-400 mb-3 flex items-center"><Icon name="Globe" size={16} className="mr-2" />LANGUAGE</h3>
                                 <div className="grid grid-cols-3 gap-1">
@@ -180,21 +178,29 @@
                                     <button className="w-full flex items-center p-2 hover:bg-gradient-to-r hover:from-purple-800/30 hover:to-blue-800/30 rounded-lg text-left transition-all"><Icon name="Users" size={16} className="mr-3 text-orange-400" />{currentTexts.hrDepartment}</button>
                                 </div>
                             </div>
-                            <div className="mb-6">
+                            <div className="mb-2">
                                 <h3 className="text-sm font-medium text-gray-400 mb-3">{currentTexts.recentConversations}</h3>
                                 <div className="space-y-1">{conversations.map((conv, index) => (<button key={index} className="w-full text-left p-2 hover:bg-slate-700/50 rounded text-sm truncate transition-all">{conv}</button>))}</div>
                             </div>
-                            <div className="absolute bottom-4 left-4 right-4">
-                                <div className="space-y-2">
-                                    <button className="w-full flex items-center p-2 hover:bg-slate-700 rounded-lg text-left"><Icon name="Settings" size={16} className="mr-3" />{currentTexts.settings}</button>
-                                    <button className="w-full flex items-center p-2 hover:bg-red-800 rounded-lg text-left text-red-400"><Icon name="LogOut" size={16} className="mr-3" />{currentTexts.signOut}</button>
-                                </div>
+                        </div>
+
+                        {/* Bottom fixed actions */}
+                        <div className="p-4 mt-auto border-t border-slate-700/50">
+                            <div className="space-y-2">
+                                <button className="w-full flex items-center p-2 hover:bg-slate-700 rounded-lg text-left">
+                                    <Icon name="Settings" size={16} className="mr-3" />
+                                    {currentTexts.settings}
+                                </button>
+                                <button className="w-full flex items-center p-2 hover:bg-red-800/50 rounded-lg text-left text-red-400">
+                                    <Icon name="LogOut" size={16} className="mr-3" />
+                                    {currentTexts.signOut}
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </aside>
 
                     {/* Main Chat */}
-                    <div className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
+                    <main className="flex-1 flex flex-col transition-all duration-300 ease-in-out">
                          {/* Header */}
                         <div className="bg-white/80 border-b border-purple-200/50 p-4 flex items-center">
                             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-purple-100 rounded-lg mr-3">
@@ -213,7 +219,7 @@
                                 <div key={msg.id} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
                                     <div className={`max-w-xl lg:max-w-3xl px-4 py-3 rounded-2xl shadow-lg ${msg.type === "user" ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white" : "bg-white border border-purple-100 text-gray-800"}`}>
                                         <p className="break-words">{msg.content}</p>
-                                        <span className={`text-xs mt-2 block ${msg.type === "user" ? "text-purple-100" : "text-gray-500"}`}>{msg.timestamp.toLocaleTimeString()}</span>
+                                        <span className={`text-xs mt-2 block ${msg.type === "user" ? "text-purple-100" : "text-gray-500"}`}>{msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                     </div>
                                 </div>
                             ))}
@@ -238,12 +244,12 @@
                         <div className="bg-white/80 border-t border-purple-200/50 p-4">
                             <div className="max-w-4xl mx-auto flex space-x-3">
                                 <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyPress={(e) => e.key === "Enter" && handleSendMessage()} placeholder={currentTexts.placeholder} className="flex-1 px-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-400 focus:outline-none" />
-                                <button onClick={handleSendMessage} className="px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg">
+                                <button onClick={handleSendMessage} disabled={isLoading} className="px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                                     <Icon name="Send" size={20} />
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </main>
                 </div>
             );
         }
