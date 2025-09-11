@@ -51,7 +51,7 @@
             const [isAccountOpen, setAccountOpen] = useState(false);
             const [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
             const [isAddToProjectOpen, setAddToProjectOpen] = useState(false);
-            const [projects, setProjects] = useState(["Data Report", "Onboarding", "Self-Service"]);
+            const [projects, setProjects] = useState([""]);
             const [chatCount, setChatCount] = useState(0);
             const [alertCount, setAlertCount] = useState(0);
             const [queryCount, setQueryCount] = useState(0);
@@ -87,25 +87,62 @@
                 setMoreMenuOpen(false);
             };
 
-            const handleSendMessage = () => {
+            const handleSendMessage = async () => {
                 if (!inputValue.trim()) return;
-                const newMessages = [...messages, { id: Date.now(), type: "user", content: inputValue, timestamp: new Date() }];
-                if(messages.length === 0){
-                    newMessages.unshift({ id: Date.now() -1 , type: "assistant", content: "Hello, I'm OnTop AI Chat. I can help with internal reports, database queries, and department information. Available in EN/PT/ES. How can I assist you?", timestamp: new Date() })
-                }
-                setMessages(newMessages);
+
+                const userMessage = { id: Date.now(), type: "user", content: inputValue, timestamp: new Date() };
+                const currentMessages = messages.length === 0 
+                    ? [
+                        { id: Date.now() - 1, type: "assistant", content: "Hello, I'm OnTop AI Chat...", timestamp: new Date() },
+                        userMessage
+                      ]
+                    : [...messages, userMessage];
+
+                setMessages(currentMessages);
+                const query = inputValue;
                 setInputValue("");
                 setIsLoading(true);
-                setTimeout(() => {
-                    const responses = {
-                        EN: ["📊 Latest sales report shows 15% growth in Q3.","👥 We currently have 1,247 active employees across 8 departments.","📈 Turnover rate is at 8.2%, below industry average."],
-                        PT: ["📊 Último relatório de vendas mostra crescimento de 15% no Q3.","👥 Atualmente temos 1.247 colaboradores ativos distribuídos em 8 departamentos.","📈 A taxa de turnover está em 8,2%, abaixo da média do setor."],
-                        ES: ["📊 El último informe de ventas muestra un crecimiento del 15% en Q3.","👥 Actualmente tenemos 1.247 empleados activos en 8 departamentos.","📈 La tasa de rotación está en 8,2%, por debajo del promedio de la industria."],
+
+                try {
+                    const apiKey = ""; // Canvas provides this automatically
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                    
+                    const systemPrompt = "You are OnTop AI, a helpful corporate intelligence assistant. You can answer questions about internal reports, database queries, and department information. Your knowledge base includes tables for sales, employees, and product performance. When asked for data, provide a concise and clear answer. You can communicate in English, Portuguese, and Spanish, based on the user's language.";
+
+                    const payload = {
+                        contents: [{ parts: [{ text: query }] }],
+                        systemInstruction: {
+                            parts: [{ text: systemPrompt }]
+                        },
                     };
-                    const assistantMessage = { id: Date.now(), type: "assistant", content: responses[selectedLanguage][Math.floor(Math.random() * responses[selectedLanguage].length)], timestamp: new Date() };
-                    setMessages(prev => [...prev, assistantMessage]);
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    const assistantText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    
+                    if (assistantText) {
+                        const assistantMessage = { id: Date.now(), type: "assistant", content: assistantText, timestamp: new Date() };
+                        setMessages(prev => [...prev, assistantMessage]);
+                    } else {
+                         throw new Error("No content received from API.");
+                    }
+
+                } catch (error) {
+                    console.error("Failed to fetch from Gemini API:", error);
+                    const errorMessage = { id: Date.now(), type: "assistant", content: "Desculpe, não consegui obter uma resposta. Por favor, tente novamente.", timestamp: new Date() };
+                    setMessages(prev => [...prev, errorMessage]);
+                } finally {
                     setIsLoading(false);
-                }, 1500);
+                }
             };
 
             const quickQuestions = {
@@ -284,3 +321,4 @@
     </script>
 </body>
 </html>
+
