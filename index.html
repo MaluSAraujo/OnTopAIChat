@@ -223,35 +223,85 @@
 
                             <div>
                                 {conversations.map((conv) => (
-                                    <div key={conv.id} className="group relative">
-                                        <button onClick={() => setCurrentChatId(conv.id)} className={`w-full flex items-center gap-2 text-left p-2 text-sm truncate transition-all rounded-lg ${currentChatId === conv.id ? 'bg-slate-700' : 'text-gray-300 hover:bg-slate-700/50'}`}>
-                                            {conv.pinned && <Icon name="Pin" size={14} className="text-purple-400" />}
-                                            {renamingChatId === conv.id ? (
-                                                <input
-                                                    type="text"
-                                                    defaultValue={conv.title}
-                                                    className="bg-transparent text-white w-full focus:outline-none"
-                                                    autoFocus
-                                                    onKeyDown={(e) => { if (e.key === 'Enter') handleRenameChat(conv.id, e.target.value); if (e.key === 'Escape') setRenamingChatId(null);}}
-                                                    onBlur={(e) => handleRenameChat(conv.id, e.target.value)}
-                                                />
-                                            ) : (
-                                                <span className="flex-1 truncate">{conv.title}</span>
-                                            )}
-                                        </button>
-                                        <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button onClick={() => setActiveChatMenu(activeChatMenu === conv.id ? null : conv.id)} className="p-1 rounded-md hover:bg-slate-600">
-                                                <Icon name="MoreHorizontal" size={16} />
-                                            </button>
-                                            {activeChatMenu === conv.id && (
-                                                <div ref={chatMenuRef} className="absolute right-0 bottom-full mb-1 w-32 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700">
-                                                    <button onClick={() => { setRenamingChatId(conv.id); setActiveChatMenu(null); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"><Icon name="Edit" size={14}/>{currentTexts.rename}</button>
-                                                    <button onClick={() => handleTogglePin(conv.id)} className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"><Icon name="Pin" size={14}/>{conv.pinned ? currentTexts.unpin : currentTexts.pin}</button>
-                                                </div>
-                                            )}
+                                  <div key={conv.id} className="group relative">
+                                    <button
+                                      onClick={() => setCurrentChatId(conv.id)}
+                                      className={`w-full flex items-center gap-2 text-left p-2 text-sm truncate transition-all rounded-lg ${
+                                        currentChatId === conv.id ? "bg-slate-700" : "text-gray-300 hover:bg-slate-700/50"
+                                      }`}
+                                    >
+                                      {conv.pinned && <Icon name="Pin" size={14} className="text-purple-400" />}
+                                      {renamingChatId === conv.id ? (
+                                        <input
+                                          type="text"
+                                          defaultValue={conv.title}
+                                          className="bg-transparent text-white w-full focus:outline-none"
+                                          autoFocus
+                                          onKeyDown={(e) => {
+                                            if (e.key === "Enter") handleRenameChat(conv.id, e.target.value);
+                                            if (e.key === "Escape") setRenamingChatId(null);
+                                          }}
+                                          onBlur={(e) => handleRenameChat(conv.id, e.target.value)}
+                                        />
+                                      ) : (
+                                        <span className="flex-1 truncate">{conv.title}</span>
+                                      )}
+                                    </button>
+                                
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <button
+                                        onClick={() =>
+                                          setActiveChatMenu(activeChatMenu === conv.id ? null : conv.id)
+                                        }
+                                        className="p-1 rounded-md hover:bg-slate-600"
+                                      >
+                                        <Icon name="MoreHorizontal" size={16} />
+                                      </button>
+                                
+                                      {activeChatMenu === conv.id && (
+                                        <div
+                                          ref={chatMenuRef}
+                                          className="absolute right-0 bottom-full mb-1 w-40 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700"
+                                        >
+                                          <button
+                                            onClick={() => {
+                                              setRenamingChatId(conv.id);
+                                              setActiveChatMenu(null);
+                                            }}
+                                            className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
+                                          >
+                                            <Icon name="Edit" size={14} />
+                                            {currentTexts.rename}
+                                          </button>
+                                
+                                          <button
+                                            onClick={() => handleTogglePin(conv.id)}
+                                            className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
+                                          >
+                                            <Icon name="Pin" size={14} />
+                                            {conv.pinned ? currentTexts.unpin : currentTexts.pin}
+                                          </button>
+                                
+                                          <button
+                                            onClick={() => {
+                                              setChats((prev) => {
+                                                const updated = { ...prev };
+                                                delete updated[conv.id];
+                                                return updated;
+                                              });
+                                              if (currentChatId === conv.id) setCurrentChatId(null);
+                                              setActiveChatMenu(null);
+                                            }}
+                                            className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-700/30 flex items-center gap-2"
+                                          >
+                                            <Icon name="Trash2" size={14} />
+                                            {currentTexts.delete}
+                                          </button>
                                         </div>
+                                      )}
                                     </div>
-                                ))}
+                                  </div>
+                                ))}                                
                             </div>
                         </div>
 
