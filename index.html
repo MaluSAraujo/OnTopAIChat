@@ -225,9 +225,20 @@
                             <div>
                                 {conversations.map((conv) => (
                                   <div key={conv.id} className="group relative">
-                                      <div className="chat-item flex justify-between items-center px-3 py-2">
-                                          {/* Nome do chat */}
-                                      <span className="chat-title text-sm text-slate-200">{conv.name}</span>
+                                      <button onClick={() => setCurrentChatId(conv.id)} className={`w-full flex items-center gap-2 text-left p-2 text-sm truncate transition-all rounded-lg ${currentChatId === conv.id ? 'bg-slate-700' : 'text-gray-300 hover:bg-slate-700/50'}`}>
+                                            {conv.pinned && <Icon name="Pin" size={14} className="text-purple-400" />}
+                                            {renamingChatId === conv.id ? (
+                                                <input
+                                                    type="text"
+                                                    defaultValue={conv.title}
+                                                    className="bg-transparent text-white w-full focus:outline-none"
+                                                    autoFocus
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') handleRenameChat(conv.id, e.target.value); if (e.key === 'Escape') setRenamingChatId(null);}}
+                                                    onBlur={(e) => handleRenameChat(conv.id, e.target.value)}
+                                                />
+                                            ) : (
+                                                <span className="flex-1 truncate">{conv.title}</span>
+                                            )}
                                     <button
                                       onClick={() => setDeleteConfirmId(conv.id)}
                                       className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-700/30 flex items-center gap-2"
