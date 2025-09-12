@@ -44,6 +44,25 @@
             return IconComponent ? <IconComponent /> : null;
         }
 
+        // Componente de Modal para confirmações e notificações
+        function Modal({ message, onConfirm, onCancel, type = 'confirm' }) {
+            return (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
+                        <p className="text-center text-lg mb-6">{message}</p>
+                        <div className="flex justify-center gap-4">
+                            {type === 'confirm' && (
+                                <button onClick={onCancel} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300">Cancelar</button>
+                            )}
+                            <button onClick={onConfirm} className={`px-4 py-2 rounded-lg text-white ${type === 'confirm' ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'}`}>
+                                {type === 'confirm' ? 'Confirmar' : 'OK'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
         function ChatInterface() {
             const [inputValue, setInputValue] = useState("");
             const [isLoading, setIsLoading] = useState(false);
@@ -53,39 +72,27 @@
             const [isMoreMenuOpen, setMoreMenuOpen] = useState(false);
             const [isAddToProjectOpen, setAddToProjectOpen] = useState(false);
             
-            const [chats, setChats] = useState(() => {
-                const savedChats = localStorage.getItem('ontop-ai-chats');
-                return savedChats ? JSON.parse(savedChats) : {};
-            });
+            const [chats, setChats] = useState(() => JSON.parse(localStorage.getItem('ontop-ai-chats') || '{}'));
             const [currentChatId, setCurrentChatId] = useState(null);
             
-            const [projects, setProjects] = useState(() => {
-                const savedProjects = localStorage.getItem('ontop-ai-projects');
-                return savedProjects ? JSON.parse(savedProjects) : [];
-            });
-
+            const [projects, setProjects] = useState(() => JSON.parse(localStorage.getItem('ontop-ai-projects') || '[]'));
             const [renamingChatId, setRenamingChatId] = useState(null);
             const [activeChatMenu, setActiveChatMenu] = useState(null);
-            const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-            
+            const [modal, setModal] = useState({ isOpen: false, message: '', onConfirm: null, onCancel: null, type: 'info' });
+
             const [alertCount, setAlertCount] = useState(0);
             const [queryCount, setQueryCount] = useState(0);
+            
             const messagesEndRef = useRef(null);
             const moreMenuRef = useRef(null);
             const chatMenuRef = useRef(null);
 
-            useEffect(() => {
-                localStorage.setItem('ontop-ai-chats', JSON.stringify(chats));
-            }, [chats]);
-
-            useEffect(() => {
-                localStorage.setItem('ontop-ai-projects', JSON.stringify(projects));
-            }, [projects]);
+            useEffect(() => { localStorage.setItem('ontop-ai-chats', JSON.stringify(chats)); }, [chats]);
+            useEffect(() => { localStorage.setItem('ontop-ai-projects', JSON.stringify(projects)); }, [projects]);
 
             useEffect(() => {
                 const handleResize = () => setSidebarOpen(window.innerWidth >= 1024);
                 window.addEventListener('resize', handleResize);
-                handleResize();
                 return () => window.removeEventListener('resize', handleResize);
             }, []);
             
@@ -96,28 +103,56 @@
                 };
                 document.addEventListener("mousedown", handleClickOutside);
                 return () => document.removeEventListener("mousedown", handleClickOutside);
-            }, [moreMenuRef, chatMenuRef]);
+            }, []);
 
-            const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-            useEffect(scrollToBottom, [chats[currentChatId]?.messages]);
+            useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chats[currentChatId]?.messages]);
 
             const startNewChat = () => setCurrentChatId(null);
 
             const handleAddNewProject = () => {
                 const newProjectName = `Novo Projeto ${projects.length + 1}`;
                 setProjects(prev => [...prev, newProjectName]);
-                setAddToProjectOpen(false);
-                setMoreMenuOpen(false);
             };
 
             const handleRenameChat = (chatId, newTitle) => {
-                if (newTitle.trim() === '') return;
-                setChats(prev => ({ ...prev, [chatId]: { ...prev[chatId], title: newTitle } }));
+                if (newTitle.trim()) setChats(prev => ({ ...prev, [chatId]: { ...prev[chatId], title: newTitle } }));
                 setRenamingChatId(null);
             };
 
             const handleTogglePin = (chatId) => {
                  setChats(prev => ({ ...prev, [chatId]: { ...prev[chatId], pinned: !prev[chatId].pinned } }));
+            };
+
+            const handleDeleteChat = (chatId) => {
+                const { [chatId]: _, ...remainingChats } = chats;
+                setChats(remainingChats);
+                if (currentChatId === chatId) {
+                    setCurrentChatId(null);
+                }
+                setModal({ isOpen: false });
+            };
+
+            const handleArchiveChat = (chatId) => {
+                if (!chatId) return;
+                setChats(prev => ({ ...prev, [chatId]: { ...prev[chatId], archived: true } }));
+                if (currentChatId === chatId) setCurrentChatId(null);
+                setModal({ isOpen: true, message: 'Conversa arquivada!', type: 'info', onConfirm: () => setModal({ isOpen: false }) });
+            };
+            
+            const handleShare = () => {
+                if (!currentChatId || !chats[currentChatId]) return;
+                const chatText = chats[currentChatId].messages.map(m => `${m.type === 'user' ? 'Você' : 'OnTop AI'}: ${m.content}`).join('\n');
+                const textArea = document.createElement("textarea");
+                textArea.value = chatText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    setModal({ isOpen: true, message: 'Conversa copiada!', type: 'info', onConfirm: () => setModal({ isOpen: false }) });
+                } catch (err) {
+                    console.error('Falha ao copiar texto: ', err);
+                }
+                document.body.removeChild(textArea);
             };
 
             const handleSendMessage = async () => {
@@ -130,7 +165,7 @@
                 if (!chatId) {
                     chatId = `chat_${Date.now()}`;
                     setCurrentChatId(chatId);
-                    setChats(prev => ({ ...prev, [chatId]: { title: query.substring(0, 30) + (query.length > 30 ? '...' : ''), messages: [userMessage], pinned: false } }));
+                    setChats(prev => ({ ...prev, [chatId]: { title: query.substring(0, 30) + (query.length > 30 ? '...' : ''), messages: [userMessage], pinned: false, archived: false } }));
                 } else {
                      setChats(prev => ({ ...prev, [chatId]: { ...prev[chatId], messages: [...prev[chatId].messages, userMessage] } }));
                 }
@@ -142,11 +177,9 @@
                     const systemPrompt = "You are OnTop AI, a helpful corporate intelligence assistant...";
                     const payload = { contents: [{ parts: [{ text: query }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
                     const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-
                     if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
                     const result = await response.json();
                     const assistantText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
                     if (assistantText) {
                         const assistantMessage = { id: Date.now(), type: "assistant", content: assistantText, timestamp: new Date() };
                         setChats(prev => ({...prev, [chatId]: { ...prev[chatId], messages: [...prev[chatId].messages, assistantMessage] }}));
@@ -175,10 +208,12 @@
             const messages = chats[currentChatId]?.messages || [];
             const conversations = Object.entries(chats)
                 .map(([id, data]) => ({ id, ...data }))
+                .filter(c => !c.archived)
                 .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.id.localeCompare(a.id));
 
             return (
                 <div className="flex h-screen bg-slate-50 text-slate-800 relative overflow-hidden">
+                    {modal.isOpen && <Modal {...modal} onCancel={() => setModal({ isOpen: false })} />}
                     {sidebarOpen && <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/40 z-20 lg:hidden"></div>}
                     
                     <aside className={`bg-gradient-to-b from-slate-900 via-slate-800 to-purple-900 text-white transform transition-transform duration-300 ease-in-out fixed inset-y-0 left-0 z-30 w-64 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -224,107 +259,36 @@
 
                             <div>
                                 {conversations.map((conv) => (
-                                  <div key={conv.id} className="group relative">
-                                    <button
-                                        onClick={() => setCurrentChatId(conv.id)}
-                                        className={`w-full flex items-center gap-2 text-left p-2 text-sm truncate transition-all rounded-lg ${currentChatId === conv.id ? 'bg-slate-700' : 'text-gray-300'}`}
-                                    >
-                                        {/* Evita quebrar se conv.title for undefined */}
-                                        {conv.title || "Untitled Chat"}
-                                    </button>
-                            
-                                    {/* Botão de deletar */}
-                                    <button
-                                        onClick={() =>
-                                            setConversations((prev) => {
-                                                const newConvs = prev.filter(c => c.id !== conv.id);
-                                                // Se o chat deletado era o atual, limpa currentChatId
-                                                if (currentChatId === conv.id) setCurrentChatId(null);
-                                                return newConvs;
-                                            })
-                                        }
-                                        className="absolute right-2 top-1 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <Icon name="Trash2" size={16} />
-                                    </button>
-                                </div>
-                            ))}
-                                    {/* Confirmação de delete */}
-                                    {deleteConfirmId === conv.id && (
-                                      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-slate-300 rounded-lg shadow-lg z-50 w-64 p-4 flex flex-col items-center space-y-3">
-                                        <p className="text-sm text-slate-800 text-center">
-                                          Are you sure you want to delete this chat?
-                                        </p>
-                                        <div className="flex gap-2">
-                                          <button
-                                            onClick={() => {
-                                              setChats((prev) => {
-                                                const updated = { ...prev };
-                                                delete updated[conv.id];
-                                                return updated;
-                                              });
-                                              if (currentChatId === conv.id) setCurrentChatId(null);
-                                              setDeleteConfirmId(null);
-                                            }}
-                                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                                          >
-                                            Yes
-                                          </button>
-                                          <button
-                                            onClick={() => setDeleteConfirmId(null)}
-                                            className="px-3 py-1 bg-gray-200 text-slate-800 rounded hover:bg-gray-300"
-                                          >
-                                            No
-                                          </button>
+                                    <div key={conv.id} className="group relative">
+                                        <button onClick={() => setCurrentChatId(conv.id)} className={`w-full flex items-center gap-2 text-left p-2 text-sm truncate transition-all rounded-lg ${currentChatId === conv.id ? 'bg-slate-700' : 'text-gray-300 hover:bg-slate-700/50'}`}>
+                                            {conv.pinned && <Icon name="Pin" size={14} className="text-purple-400 flex-shrink-0" />}
+                                            {renamingChatId === conv.id ? (
+                                                <input
+                                                    type="text"
+                                                    defaultValue={conv.title}
+                                                    className="bg-transparent text-white w-full focus:outline-none"
+                                                    autoFocus
+                                                    onKeyDown={(e) => { if (e.key === 'Enter') handleRenameChat(conv.id, e.target.value); if (e.key === 'Escape') setRenamingChatId(null);}}
+                                                    onBlur={(e) => handleRenameChat(conv.id, e.target.value)}
+                                                />
+                                            ) : (
+                                                <span className="flex-1 truncate">{conv.title}</span>
+                                            )}
+                                        </button>
+                                        <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button onClick={() => setActiveChatMenu(activeChatMenu === conv.id ? null : conv.id)} className="p-1 rounded-md hover:bg-slate-600">
+                                                <Icon name="MoreHorizontal" size={16} />
+                                            </button>
+                                            {activeChatMenu === conv.id && (
+                                                <div ref={chatMenuRef} className="absolute right-0 bottom-full mb-1 w-36 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700">
+                                                    <button onClick={() => { setRenamingChatId(conv.id); setActiveChatMenu(null); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"><Icon name="Edit" size={14}/>{currentTexts.rename}</button>
+                                                    <button onClick={() => { handleTogglePin(conv.id); setActiveChatMenu(null); }} className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"><Icon name="Pin" size={14}/>{conv.pinned ? currentTexts.unpin : currentTexts.pin}</button>
+                                                     <button onClick={() => { setModal({ isOpen: true, message: `Excluir "${conv.title}"?`, type: 'confirm', onConfirm: () => handleDeleteChat(conv.id) }); setActiveChatMenu(null); }} className="w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-slate-700 flex items-center gap-2"><Icon name="Trash2" size={14}/>{currentTexts.delete}</button>
+                                                </div>
+                                            )}
                                         </div>
-                                      </div>
-                                    )}
-                                
-                                    {/* Menu lateral */}
-                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <button
-                                        onClick={() => setActiveChatMenu(activeChatMenu === conv.id ? null : conv.id)}
-                                        className="p-1 rounded-md hover:bg-slate-600"
-                                      >
-                                        <Icon name="MoreHorizontal" size={16} />
-                                      </button>
-                                
-                                      {activeChatMenu === conv.id && (
-                                        <div
-                                          ref={chatMenuRef}
-                                          className="absolute right-0 bottom-full mb-1 w-40 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700"
-                                        >
-                                          <button
-                                            onClick={() => {
-                                              setRenamingChatId(conv.id);
-                                              setActiveChatMenu(null);
-                                            }}
-                                            className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
-                                          >
-                                            <Icon name="Edit" size={14} />
-                                            {currentTexts.rename}
-                                          </button>
-                                
-                                          <button
-                                            onClick={() => handleTogglePin(conv.id)}
-                                            className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
-                                          >
-                                            <Icon name="Pin" size={14} />
-                                            {conv.pinned ? currentTexts.unpin : currentTexts.pin}
-                                          </button>
-                                
-                                          <button
-                                            onClick={() => setDeleteConfirmId(conv.id)}
-                                            className="w-full text-left px-3 py-1.5 text-xs text-red-500 hover:bg-red-700/30 flex items-center gap-2"
-                                          >
-                                            <Icon name="Trash2" size={14} />
-                                            {currentTexts.delete}
-                                          </button>
-                                        </div>
-                                      )}
                                     </div>
-                                  </div>
-                                ))}                                
+                                ))}
                             </div>
                         </div>
 
@@ -357,7 +321,7 @@
                                     </select>
                                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-700"><Icon name="ChevronDown" size={16} /></div>
                                 </div>
-                                <button className="p-2 hidden md:flex items-center gap-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm">
+                                <button onClick={handleShare} className="p-2 hidden md:flex items-center gap-2 hover:bg-slate-100 rounded-lg text-slate-600 text-sm">
                                     <Icon name="Share2" size={16} /> {currentTexts.share}
                                 </button>
                                 <div className="relative" ref={moreMenuRef}>
@@ -381,9 +345,9 @@
                                                     </div>
                                                 )}
                                             </div>
-                                            <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"><Icon name="Archive" size={16}/> {currentTexts.archive}</button>
-                                            <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"><Icon name="Flag" size={16}/> {currentTexts.report}</button>
-                                            <button className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"><Icon name="Trash2" size={16}/> {currentTexts.delete}</button>
+                                            <button onClick={() => handleArchiveChat(currentChatId)} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"><Icon name="Archive" size={16}/> {currentTexts.archive}</button>
+                                            <button onClick={() => setModal({ isOpen: true, message: 'Reportado!', type: 'info', onConfirm: () => setModal({isOpen: false})})} className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"><Icon name="Flag" size={16}/> {currentTexts.report}</button>
+                                            <button onClick={() => {if(currentChatId) setModal({ isOpen: true, message: `Excluir conversa atual?`, type: 'confirm', onConfirm: () => handleDeleteChat(currentChatId) }); }} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"><Icon name="Trash2" size={16}/> {currentTexts.delete}</button>
                                         </div>
                                     )}
                                 </div>
@@ -391,7 +355,7 @@
                         </header>
 
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.length === 0 ? (
+                            {!currentChatId ? (
                                 <div className="flex flex-col items-center justify-center h-full text-center">
                                     <img src="assets/logo.png" alt="OnTop AI Logo" className="h-12 w-12 mb-4" />
                                     <h2 className="text-2xl font-bold text-slate-800">{currentTexts.welcome}</h2>
@@ -440,4 +404,3 @@
     </script>
 </body>
 </html>
-
