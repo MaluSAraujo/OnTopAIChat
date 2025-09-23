@@ -566,7 +566,7 @@ function ChatInterface() {
                                             <Icon name="ChevronRight" size={16}/>
                                         </button>
                                         {isAddToProjectOpen && (
-                                            <div className="absolute left-full -top-2 w-56 bg-white rounded-lg shadow-xl z-30 border border-slate-200">
+                                            <div className="absolute right-full -top-2 w-56 bg-white rounded-lg shadow-xl z-30 border border-slate-200">
                                                 <button 
                                                     onClick={handleAddNewProject} 
                                                     className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"
