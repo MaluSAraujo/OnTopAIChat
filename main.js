@@ -74,7 +74,9 @@ function ChatInterface() {
         }
     });
     const [renamingChatId, setRenamingChatId] = useState(null);
+    const [renamingProjectId, setRenamingProjectId] = useState(null);
     const [activeChatMenu, setActiveChatMenu] = useState(null);
+    const [activeProjectMenu, setActiveProjectMenu] = useState(null);
     const [modal, setModal] = useState({ isOpen: false, message: '', onConfirm: null, onCancel: null, type: 'info' });
 
     const [alertCount, setAlertCount] = useState(0);
@@ -83,6 +85,7 @@ function ChatInterface() {
     const messagesEndRef = useRef(null);
     const moreMenuRef = useRef(null);
     const chatMenuRef = useRef(null);
+    const projectMenuRef = useRef(null);
 
     useEffect(() => {
         try {
@@ -110,6 +113,7 @@ function ChatInterface() {
         const handleClickOutside = (event) => {
             if (moreMenuRef.current && !moreMenuRef.current.contains(event.target)) setMoreMenuOpen(false);
             if (chatMenuRef.current && !chatMenuRef.current.contains(event.target)) setActiveChatMenu(null);
+            if (projectMenuRef.current && !projectMenuRef.current.contains(event.target)) setActiveProjectMenu(null);
         };
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -124,6 +128,21 @@ function ChatInterface() {
     const handleAddNewProject = () => {
         const newProjectName = `New Project ${projects.length + 1}`;
         setProjects(prev => [...prev, newProjectName]);
+    };
+
+    const handleRenameProject = (projectIndex, newName) => {
+        if (newName.trim()) {
+            setProjects(prev => prev.map((project, index) => 
+                index === projectIndex ? newName : project
+            ));
+        }
+        setRenamingProjectId(null);
+    };
+
+    const handleDeleteProject = (projectIndex) => {
+        setProjects(prev => prev.filter((_, index) => index !== projectIndex));
+        setModal({ isOpen: false });
+        setActiveProjectMenu(null);
     };
 
     const handleRenameChat = (chatId, newTitle) => {
@@ -314,7 +333,8 @@ function ChatInterface() {
             queries: "Queries", 
             rename: "Rename", 
             pin: "Pin", 
-            unpin: "Unpin"
+            unpin: "Unpin",
+            addChat: "Add Chat"
         },
         PT: { 
             typing: "OnTop AI está digitando...", 
@@ -338,7 +358,8 @@ function ChatInterface() {
             queries: "Consultas", 
             rename: "Renomear", 
             pin: "Fixar", 
-            unpin: "Desafixar"
+            unpin: "Desafixar",
+            addChat: "Adicionar Chat"
         },
         ES: { 
             typing: "OnTop AI está escribiendo...", 
@@ -362,7 +383,8 @@ function ChatInterface() {
             queries: "Consultas", 
             rename: "Renombrar", 
             pin: "Fijar", 
-            unpin: "Desfijar"
+            unpin: "Desfijar",
+            addChat: "Añadir Chat"
         },
     };
 
@@ -422,9 +444,67 @@ function ChatInterface() {
                     <div className="mb-4">
                         <h3 className="px-2 mb-2 text-xs font-semibold tracking-wider text-gray-400 uppercase">{currentTexts.projects}</h3>
                         {projects.map((project, index) => (
-                            <button key={index} className="w-full flex items-center gap-3 p-2 text-left text-sm text-gray-300 rounded-lg hover:bg-slate-700/50">
-                                <Icon name="Folder" size={16} />{project}
-                            </button>
+                            <div key={index} className="group relative">
+                                <button className="w-full flex items-center gap-3 p-2 text-left text-sm text-gray-300 rounded-lg hover:bg-slate-700/50">
+                                    <Icon name="Folder" size={16} />
+                                    {renamingProjectId === index ? (
+                                        <input
+                                            type="text"
+                                            defaultValue={project}
+                                            className="bg-transparent text-white w-full focus:outline-none"
+                                            autoFocus
+                                            onKeyDown={(e) => { 
+                                                if (e.key === 'Enter') handleRenameProject(index, e.target.value); 
+                                                if (e.key === 'Escape') setRenamingProjectId(null);
+                                            }}
+                                            onBlur={(e) => handleRenameProject(index, e.target.value)}
+                                        />
+                                    ) : (
+                                        <span className="flex-1 truncate">{project}</span>
+                                    )}
+                                </button>
+                                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button 
+                                        onClick={() => setActiveProjectMenu(activeProjectMenu === index ? null : index)} 
+                                        className="p-1 rounded-md hover:bg-slate-600"
+                                    >
+                                        <Icon name="MoreHorizontal" size={16} />
+                                    </button>
+                                    {activeProjectMenu === index && (
+                                        <div ref={projectMenuRef} className="absolute right-0 bottom-full mb-1 w-36 bg-slate-800 rounded-md shadow-lg z-10 border border-slate-700">
+                                            <button 
+                                                onClick={() => { 
+                                                    // Add logic to show chats that can be added to project
+                                                    setActiveProjectMenu(null); 
+                                                }} 
+                                                className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
+                                            >
+                                                <Icon name="Plus" size={14}/>{currentTexts.addChat}
+                                            </button>
+                                            <button 
+                                                onClick={() => { setRenamingProjectId(index); setActiveProjectMenu(null); }} 
+                                                className="w-full text-left px-3 py-1.5 text-xs text-gray-300 hover:bg-slate-700 flex items-center gap-2"
+                                            >
+                                                <Icon name="Edit" size={14}/>{currentTexts.rename}
+                                            </button>
+                                            <button 
+                                                onClick={() => { 
+                                                    setModal({ 
+                                                        isOpen: true, 
+                                                        message: `Delete "${project}"?`, 
+                                                        type: 'confirm', 
+                                                        onConfirm: () => handleDeleteProject(index) 
+                                                    }); 
+                                                    setActiveProjectMenu(null); 
+                                                }} 
+                                                className="w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-slate-700 flex items-center gap-2"
+                                            >
+                                                <Icon name="Trash2" size={14}/>{currentTexts.delete}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         ))}
                     </div>
 
@@ -566,7 +646,7 @@ function ChatInterface() {
                                             <Icon name="ChevronRight" size={16}/>
                                         </button>
                                         {isAddToProjectOpen && (
-                                            <div className="absolute right-full -top-2 w-56 bg-white rounded-lg shadow-xl z-30 border border-slate-200">
+                                            <div className="absolute left-full -top-2 w-56 bg-white rounded-lg shadow-xl z-30 border border-slate-200">
                                                 <button 
                                                     onClick={handleAddNewProject} 
                                                     className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 flex items-center gap-3"
