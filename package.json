@@ -1,0 +1,63 @@
+{
+  "name": "ontop-ai-backend", // Project name
+  "version": "1.0.0", // Initial version of the backend
+  "description": "Backend API for OnTop AI with Gemini integration and AWS Data Warehouse", // Short description of the system
+  "main": "server.js", // Main entry point of the app
+  "scripts": {
+    // Scripts you can run with "npm run <name>"
+    "start": "node server.js", // Start the server in production mode
+    "dev": "nodemon server.js", // Start in development mode, auto-restarts on file save
+    "test": "jest", // Run tests using Jest
+    "migrate": "node migrations/run-migrations.js", // Execute database migrations
+    "seed": "node seeds/run-seeds.js", // Populate the database with seed data
+    "cleanup-cache": "node scripts/cleanup-warehouse-cache.js" // Script to clean up the Data Warehouse cache
+  },
+  "dependencies": {
+    // Packages required in production
+    "express": "^4.18.2", // Web framework for routes and middleware
+    "cors": "^2.8.5", // Handle Cross-Origin requests
+    "jsonwebtoken": "^9.0.2", // JWT creation and verification (authentication)
+    "bcrypt": "^5.1.1", // Password hashing
+    "pg": "^8.11.3", // PostgreSQL client for Node.js
+    "dotenv": "^16.3.1", // Load environment variables from .env file
+    "helmet": "^7.0.0", // Security: add protective HTTP headers
+    "express-rate-limit": "^6.10.0", // Limit requests to prevent DoS/brute force attacks
+    "joi": "^17.9.2", // Data validation (e.g., request body schemas)
+    "winston": "^3.10.0", // Logging library
+    "@google/generative-ai": "^0.2.1", // Official library for Google Gemini integration
+    "aws-sdk": "^2.1471.0", // AWS SDK (e.g., S3, Redshift, etc.)
+    "multer": "^1.4.5-lts.1", // File upload handling (PDF, CSV, images)
+    "pdf-parse": "^1.1.1", // Extract text from PDFs
+    "xlsx": "^0.18.5", // Work with Excel spreadsheets
+    "csv-parser": "^3.0.0", // Read CSV files
+    "node-cron": "^3.0.2", // Schedule cron jobs/tasks
+    "compression": "^1.7.4", // Compress HTTP responses for performance
+    "express-validator": "^7.0.1" // Input validation middleware for Express
+  },
+  "devDependencies": {
+    // Packages used only in development/testing
+    "nodemon": "^3.0.1", // Auto-restart server on file changes
+    "jest": "^29.6.2", // Testing framework
+    "supertest": "^6.3.3", // HTTP endpoint testing
+    "@types/jest": "^29.5.4", // Type definitions for Jest (useful even in JS projects for IDE support)
+    "eslint": "^8.48.0", // Linter for code quality and standards
+    "prettier": "^3.0.3" // Code formatter
+  },
+  "engines": {
+    "node": ">=18.0.0" // Node.js version requirement
+  },
+  "keywords": [
+    // Keywords to describe the project (helpful for documentation or npm registry)
+    "api",
+    "chat",
+    "ai",
+    "gemini",
+    "aws",
+    "data-warehouse",
+    "redshift",
+    "postgresql",
+    "enterprise"
+  ],
+  "author": "On Top", // Project author (your name or organisation)
+  "license": "MIT" // License type
+}
