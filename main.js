@@ -404,8 +404,8 @@ function ChatInterface() {
             <aside className={`bg-gradient-sidebar text-white transform transition-transform duration-300 ease-in-out fixed inset-y-0 left-0 z-30 w-64 flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                 <div className="p-4 flex items-center justify-between">
                      <div className="flex items-center gap-2">
-                        <div className="h-8 w-8 bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-bold text-sm">AI</span>
+                        <div className="h-8 w-8 bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg flex items-center justify-center overflow-hidden p-0.5">
+                            <img src="/assets/logo.jpeg" alt="Company Logo" className="w-full h-full object-cover" />
                         </div>
                         <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">OnTop AI</h1>
                      </div>
