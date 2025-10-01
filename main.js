@@ -1,6 +1,3 @@
-main.js (projeto inicial)
-
-
 const { useState, useRef, useEffect } = React;
 
 function Icon({ name, className = "", size = 20 }) {
