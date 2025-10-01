@@ -405,7 +405,7 @@ function ChatInterface() {
                 <div className="p-4 flex items-center justify-between">
                      <div className="flex items-center gap-2">
                         <div className="h-8 w-8 bg-gradient-to-r from-purple-400 to-blue-400 rounded-lg flex items-center justify-center overflow-hidden p-0.5">
-                            <img src="/assets/logo.jpeg" alt="Company Logo" className="w-full h-full object-cover" />
+                            <img src="assets/logo.jpeg" alt="Company Logo" className="w-full h-full object-cover" />
                         </div>
                         <h1 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">OnTop AI</h1>
                      </div>
@@ -704,8 +704,8 @@ function ChatInterface() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {!currentChatId ? (
                         <div className="flex flex-col items-center justify-center h-full text-center">
-                            <div className="h-12 w-12 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl flex items-center justify-center mb-4">
-                                <span className="text-white font-bold text-lg">AI</span>
+                            <div className="h-12 w-12 rounded-xl flex items-center justify-center mb-4 overflow-hidden bg-white shadow-lg">
+                                <img src="assets/logo.jpeg" alt="Company Logo" className="w-full h-full object-cover" />
                             </div>
                             <h2 className="text-2xl font-bold text-slate-800">{currentTexts.welcome}</h2>
                             <p className="text-slate-500 mb-6">{currentTexts.suggestions}</p>
