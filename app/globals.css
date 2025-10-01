@@ -69,6 +69,22 @@ body {
     border-color: #a855f7;
 }
 
+/* Logo information */
+
+.company-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+.quickquestions-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
 /* Loading animation */
 @keyframes typing {
     0%, 60%, 100% {
