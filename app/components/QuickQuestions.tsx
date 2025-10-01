@@ -17,8 +17,9 @@ export default function QuickQuestions({
   return (
     <div className="flex flex-col items-center justify-center h-full text-center">
       {/* App logo */}
-      <div className="h-12 w-12 bg-gradient-to-r from-purple-400 to-blue-400 rounded-xl flex items-center justify-center mb-4">
-        <span className="text-white font-bold text-lg">AI</span>
+      <div className="logo-container">
+        <img src="/assets/logo.jpeg" alt="Company Logo" className="quickquestions-logo" />
+        <span>OnTop AI</span>
       </div>
       
       {/* Welcome heading */}
